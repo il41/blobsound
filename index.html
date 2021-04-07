@@ -170,12 +170,16 @@
   
     const ctx = new window.AudioContext()
     const mix = ctx.createGain()
+    const verbmix = ctx.createGain()
     mix.gain.value = 0.5
     mix.connect(ctx.destination)
+    verbmix.gain.value = 0.5
+    verbmix.connect(ctx.destination)
   
     // sounds.forEach((e)=>{
     //   let src = ctx.createMediaElementSource(e);
     //   src.connect(mix)
+    //   src.connect(verbmix)
     // })
   
     let CurY;
@@ -185,7 +189,7 @@
 
     function updatePage(e) {
       CurY = (window.Event) ? e.pageY : event.clientY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
-      mix.gain.value = CurY/HEIGHT;
+      verbmix.gain.value = CurY/HEIGHT;
     }
 
     
