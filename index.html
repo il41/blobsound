@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <title>Untitled</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: sans-serif;
+        background-color: white;
+/*         margin: auto; */
+      }
+
+      .scene {
+/* ~~~~~~~~~LOVELY TEXTURE GLITCH ~~~~~~~~~~~~~~~~~~~~*/
+        filter: blur(30px) contrast(500);
+/* ~~~~~~~~~INTENDED TO WORK ON FIREFOX VERSION 38~~~*/
+        z-index: -10;
+        width: 400px;
+        height: 400px;
+        border: 100px solid #CCC;
+        margin: 80px;
+        perspective: 400px;
+      }
+
+      .cube {
+        width: 200px;
+        height: 200px;
+        position: relative;
+        transform-style: preserve-3d;
+        transform: translateZ(-100px);
+        transition: transform 4s;
+        animation: pulse 10s infinite;
+      }
+
+      .cube.show-front {transform: translateZ(-100px) rotateY(0deg);}
+      .cube.show-right {transform: translateZ(-100px) rotateY(-90deg);}
+      .cube.show-back {transform: translateZ(-100px) rotateY(-180deg);}
+      .cube.show-left {transform: translateZ(-100px) rotateY(90deg);}
+      .cube.show-top {transform: translateZ(-100px) rotateX(-90deg);}
+      .cube.show-bottom {transform: translateZ(-100px) rotateX(90deg);}
+
+      .cube__face {
+        border-radius: 200px;
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        border: 2px solid black;
+        line-height: 200px;
+        font-size: 40px;
+        font-weight: bold;
+        color: white;
+        text-align: center;
+
+      }
+
+      @keyframes pulse {
+        0% {perspective: 300px;}
+        25% {perspective: 400px;}
+        50% {perspective: 500px;}
+        75% {perspective: 400px;}
+        100% {perspective: 300px;}
+      }
+
+      .cube__face--front {background: hsla(0, 100%, 50%, 0.3);}
+      .cube__face--right {background: hsla(60, 100%, 50%, 0.3);}
+      .cube__face--back {background: hsla(120, 100%, 50%, 0.3);}
+      .cube__face--left {background: hsla(180, 100%, 50%, 0.3);}
+      .cube__face--top {background: hsla(240, 100%, 50%, 0.3);}
+      .cube__face--bottom {background: hsla(300, 100%, 50%, 0.3);}
+      .cube__face--front {transform: rotateY(0deg) translateZ(100px);}
+      .cube__face--right {transform: rotateY(90deg) translateZ(100px);}
+      .cube__face--back {transform: rotateY(180deg) translateZ(100px);}
+      .cube__face--left {transform: rotateY(-90deg) translateZ(100px);}
+      .cube__face--top {transform: rotateX(90deg) translateZ(100px);}
+      .cube__face--bottom {transform: rotateX(-90deg) translateZ(100px);}
+
+      label {
+        margin-right: 10px;
+      }
+      .play-btn{
+        border-radius: 20px;
+        background-color: blue;
+        position: inline-block;
+        width: 100px;
+        text-align: center;
+        color: white;
+        border: 2px solid red;
+      }
+      audio{
+        display:none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="scene">
+      <div class="cube">
+        <div class="cube__face cube__face--front">11ai</div>
+        <div class="cube__face cube__face--back">11ai</div>
+        <div class="cube__face cube__face--right">11ai</div>
+        <div class="cube__face cube__face--left">11ai</div>
+        <div class="cube__face cube__face--top">11ai</div>
+        <div class="cube__face cube__face--bottom">11ai</div>
+      </div>
+    </div>
+    <p class="radio-group">
+      <label><input id="0" class="radio" type="radio" name="rotate-cube-side" value="front" /> 1</label>
+      <label><input id="1" class="radio" type="radio" name="rotate-cube-side" value="right" checked /> 2</label>
+      <label><input id="2" class="radio" type="radio" name="rotate-cube-side" value="back" /> 3</label>
+      <label><input id="3" class="radio" type="radio" name="rotate-cube-side" value="left" /> 4</label>
+      <label><input id="4" class="radio" type="radio" name="rotate-cube-side" value="top" /> 5</label>
+      <label><input id="5" class="radio" type="radio" name="rotate-cube-side" value="bottom" /> 6</label>
+    </p>
+    <input type="range" min="1" max="100" value="50" class="slider" id="myRange"><span>reverb</span>
+    <div class="play-btn">
+      <p>
+        PLAY
+      </p>
+    </div>
+    <br>
+    <div class="computoser">
+      <audio src="http://dhvexktaalgrs.cloudfront.net/5960.mp3" class="audio0" loop="loop" controls></audio>
+      <audio src="http://dhvexktaalgrs.cloudfront.net/5961.mp3" class="audio1" loop="loop" controls></audio>
+      <audio src="http://dhvexktaalgrs.cloudfront.net/4751.mp3" class="audio2" loop="loop" controls></audio>
+      <audio src="http://dhvexktaalgrs.cloudfront.net/5963.mp3" class="audio3" loop="loop" controls></audio>
+      <audio src="http://dhvexktaalgrs.cloudfront.net/5964.mp3" class="audio4" loop="loop" controls></audio>
+      <audio src="http://dhvexktaalgrs.cloudfront.net/4752.mp3" class="audio5" loop="loop" controls></audio>
+    </div>
+  </body>
+  
+  
+  <script>
+    let scene = document.querySelector(".scene")
+    let borderSlider = document.querySelector("#myRange")
+    borderSlider.oninput = function() {
+      scene.style = "border: " + mapRange(this.value, 1, 100, 100, 1) + "px solid #CCC";
+    }
+
+//~~~~~~~~~~~~~~~MAPPING FUNCTION~~~~~~~~~~~~~~~
+    // linearly maps value from the range (a..b) to (c..d)
+    function mapRange(value, a, b, c, d) {
+      // first map value from (a..b) to (0..1)
+      value = (value - a) / (b - a);
+      // then map it from (0..1) to (c..d) and return it
+      return c + value * (d - c);
+    }
+  </script>
+  <script>
+    let playBtn = document.querySelector('.play-btn');
+    let sounds = document.querySelectorAll('audio');
+    sounds.forEach((e)=>{
+      e.src="http://dhvexktaalgrs.cloudfront.net/"+(Math.floor(Math.random(4,1832)*(1832-4))+4)+".mp3"
+      e.volume = 0;
+    })
+    playBtn.addEventListener('click',()=>{
+      // console.log('hi')
+      if (sounds[0] !== undefined){
+        playBtn.style.display = 'none'
+        sounds.forEach((e)=>{
+          e.play();
+        })
+      }
+    })
+    
+    function fadeIn(p_audio){  
+      let actualVolume = 0;
+      let fadeInInterval = setInterval(function(){
+        actualVolume = (parseFloat(actualVolume) + 0.1).toFixed(1);
+        if(actualVolume  >= 0){
+            p_audio.volume = actualVolume;
+        } else {
+            clearInterval(fadeOutInterval);
+        }
+      }, 100);
+    }
+    
+    function fadeOut(p_audio){  
+      var actualVolume = p_audio.volume;
+      var fadeOutInterval = setInterval(function(){
+        actualVolume = (parseFloat(actualVolume) - 0.1).toFixed(1);
+        if(actualVolume >= 0){
+            p_audio.volume = actualVolume;
+        } else {
+            clearInterval(fadeOutInterval);
+        }
+      }, 100);
+    }
+    
+    
+    
+    let cube = document.querySelector('.cube');
+    let radioGroup = document.querySelector('.radio-group');
+    let currentClass = '';
+    function changeSide() {
+      let checkedRadio = radioGroup.querySelector(':checked');
+      for(let i=0; i<sounds.length;i++){
+        if(checkedRadio.id==i){
+          if(!sounds[i].paused){
+            fadeIn(sounds[i]);
+          }
+        } else{
+          if(!sounds[i].paused){
+            fadeOut(sounds[i]);
+          }
+        }
+          
+      };
+      let showClass = 'show-' + checkedRadio.value;
+      if (currentClass) {
+        cube.classList.remove(currentClass);
+      }
+      cube.classList.add(showClass);
+      currentClass = showClass;
+      
+    }
+    // set initial side
+    changeSide();
+
+    radioGroup.addEventListener('change', changeSide);
+  </script>
+  
+
+
+</html>
