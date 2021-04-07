@@ -197,10 +197,10 @@
       let actualVolume = 0;
       let fadeInInterval = setInterval(function(){
         actualVolume = (parseFloat(actualVolume) + 0.1).toFixed(1);
-        if(actualVolume  >= 0){
+        if(actualVolume  <= 1){
             p_audio.volume = actualVolume;
         } else {
-            clearInterval(fadeOutInterval);
+            clearInterval(fadeInInterval);
         }
       }, 100);
     }
