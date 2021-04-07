@@ -122,12 +122,13 @@
     </div>
     <br>
     <div class="computoser">
-      <audio src="http://dhvexktaalgrs.cloudfront.net/5960.mp3" class="audio0" loop="loop" controls></audio>
-      <audio src="http://dhvexktaalgrs.cloudfront.net/5961.mp3" class="audio1" loop="loop" controls></audio>
-      <audio src="http://dhvexktaalgrs.cloudfront.net/4751.mp3" class="audio2" loop="loop" controls></audio>
-      <audio src="http://dhvexktaalgrs.cloudfront.net/5963.mp3" class="audio3" loop="loop" controls></audio>
-      <audio src="http://dhvexktaalgrs.cloudfront.net/5964.mp3" class="audio4" loop="loop" controls></audio>
-      <audio src="http://dhvexktaalgrs.cloudfront.net/4752.mp3" class="audio5" loop="loop" controls></audio>
+      <audio src="0.mp3" class="audio0" loop="loop" controls></audio>
+      <audio src="1.mp3" class="audio1" loop="loop" controls></audio>
+      <audio src="2.mp3" class="audio2" loop="loop" controls></audio>
+      <audio src="3.mp3" class="audio3" loop="loop" controls></audio>
+      <audio src="4.mp3" class="audio4" loop="loop" controls></audio>
+      <audio src="5.mp3" class="audio5" loop="loop" controls></audio>
+      
     </div>
   </body>
   
@@ -151,10 +152,12 @@
   <script>
     let playBtn = document.querySelector('.play-btn');
     let sounds = document.querySelectorAll('audio');
+
     sounds.forEach((e)=>{
-      e.src="http://dhvexktaalgrs.cloudfront.net/"+(Math.floor(Math.random(4,1832)*(1832-4))+4)+".mp3"
+      // e.src="http://dhvexktaalgrs.cloudfront.net/"+(Math.floor(Math.random(4,1832)*(1832-4))+4)+".mp3"
       e.volume = 0;
     })
+
     playBtn.addEventListener('click',()=>{
       // console.log('hi')
       if (sounds[0] !== undefined){
@@ -164,6 +167,27 @@
         })
       }
     })
+  
+    const ctx = new window.AudioContext()
+    const mix = ctx.createGain()
+    mix.gain.value = 0.5
+    mix.connect(ctx.destination)
+  
+    // sounds.forEach((e)=>{
+    //   let src = ctx.createMediaElementSource(e);
+    //   src.connect(mix)
+    // })
+  
+    let CurY;
+    let HEIGHT = window.innerHeight;
+  
+    document.onmousemove = updatePage;
+
+    function updatePage(e) {
+      CurY = (window.Event) ? e.pageY : event.clientY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
+      mix.gain.value = CurY/HEIGHT;
+    }
+
     
     function fadeIn(p_audio){  
       let actualVolume = 0;
