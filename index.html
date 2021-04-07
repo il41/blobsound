@@ -128,11 +128,11 @@
       <audio src="3.mp3" class="audio3" loop="loop" controls></audio>
       <audio src="4.mp3" class="audio4" loop="loop" controls></audio>
       <audio src="5.mp3" class="audio5" loop="loop" controls></audio>
-      
+
     </div>
   </body>
-  
-  
+
+
   <script>
     let scene = document.querySelector(".scene")
     let borderSlider = document.querySelector("#myRange")
@@ -167,24 +167,55 @@
         })
       }
     })
-  
+
     const ctx = new window.AudioContext()
     const mix = ctx.createGain()
     const verbmix = ctx.createGain()
-    mix.gain.value = 0.5
+    const reverb = ctx.createConvolver()
+    mix.gain.value = 0
     mix.connect(ctx.destination)
     verbmix.gain.value = 0.5
     verbmix.connect(ctx.destination)
-  
-    // sounds.forEach((e)=>{
-    //   let src = ctx.createMediaElementSource(e);
-    //   src.connect(mix)
-    //   src.connect(verbmix)
-    // })
-  
+
+    reverb.connect(verbmix)
+    reverb.buffer=algoReverb(3,2);
+
+    /*
+    in this ConvolverNode example we're going to create our own impulse buffer from
+    scratch algorithmically. the algoReverb() example borrows code from Nick
+    Thompson's simple-reverb repo. https://github.com/web-audio-components/simple-reverb
+
+    you can try different values for seconds, decay && reverse (boolean) in the
+    console like so: rev.buffer = algoReverb( 1.5, 3, false )
+    */
+    function algoReverb (seconds, decay, reverse) {
+      const rate = ctx.sampleRate
+      const length = rate * seconds
+      const impulse = ctx.createBuffer(2, length, rate)
+      const impulseL = impulse.getChannelData(0)
+      const impulseR = impulse.getChannelData(1)
+      let n, i
+      for (i = 0; i < length; i++) {
+        n = (reverse) ? length-i : i
+        impulseL[i] = (Math.random()*2 - 1) * Math.pow( 1 - n/length, decay)
+        impulseR[i] = (Math.random()*2 - 1) * Math.pow( 1 - n/length, decay)
+      }
+      return impulse
+    }
+
+
+
+    let soundNodes = []
+    sounds.forEach((e)=>{
+      let src = ctx.createMediaElementSource(e);
+      src.connect(mix)
+      src.connect(verbmix)
+      soundNodes.push(src);
+    })
+
     let CurY;
     let HEIGHT = window.innerHeight;
-  
+
     document.onmousemove = updatePage;
 
     function updatePage(e) {
@@ -192,8 +223,8 @@
       verbmix.gain.value = CurY/HEIGHT;
     }
 
-    
-    function fadeIn(p_audio){  
+
+    function fadeIn(p_audio){
       let actualVolume = 0;
       let fadeInInterval = setInterval(function(){
         actualVolume = (parseFloat(actualVolume) + 0.1).toFixed(1);
@@ -204,8 +235,8 @@
         }
       }, 100);
     }
-    
-    function fadeOut(p_audio){  
+
+    function fadeOut(p_audio){
       var actualVolume = p_audio.volume;
       var fadeOutInterval = setInterval(function(){
         actualVolume = (parseFloat(actualVolume) - 0.1).toFixed(1);
@@ -216,9 +247,9 @@
         }
       }, 100);
     }
-    
-    
-    
+
+
+
     let cube = document.querySelector('.cube');
     let radioGroup = document.querySelector('.radio-group');
     let currentClass = '';
@@ -234,7 +265,7 @@
             fadeOut(sounds[i]);
           }
         }
-          
+
       };
       let showClass = 'show-' + checkedRadio.value;
       if (currentClass) {
@@ -242,14 +273,14 @@
       }
       cube.classList.add(showClass);
       currentClass = showClass;
-      
+
     }
     // set initial side
     changeSide();
 
     radioGroup.addEventListener('change', changeSide);
   </script>
-  
+
 
 
 </html>
