@@ -132,15 +132,14 @@
     </div>
   </body>
 
-
   <script>
     let scene = document.querySelector(".scene")
     let borderSlider = document.querySelector("#myRange")
-    borderSlider.oninput = function() {
-      scene.style = "border: " + mapRange(this.value, 1, 100, 100, 1) + "px solid #CCC";
-    }
+    // borderSlider.oninput = function() {
+    //   scene.style = "border: " + mapRange(this.value, 1, 100, 100, 1) + "px solid #CCC";
+    // }
 
-//~~~~~~~~~~~~~~~MAPPING FUNCTION~~~~~~~~~~~~~~~
+    //~~~~~~~~~~~~~~~MAPPING FUNCTION~~~~~~~~~~~~~~~
     // linearly maps value from the range (a..b) to (c..d)
     function mapRange(value, a, b, c, d) {
       // first map value from (a..b) to (0..1)
@@ -148,8 +147,12 @@
       // then map it from (0..1) to (c..d) and return it
       return c + value * (d - c);
     }
-  </script>
-  <script>
+
+
+
+
+
+    let verbSlider = document.querySelector('.slider');
     let playBtn = document.querySelector('.play-btn');
     let sounds = document.querySelectorAll('audio');
 
@@ -169,13 +172,16 @@
     })
 
     const ctx = new window.AudioContext()
+    const master = ctx.createGain();
     const mix = ctx.createGain()
     const verbmix = ctx.createGain()
     const reverb = ctx.createConvolver()
-    mix.gain.value = 0
-    mix.connect(ctx.destination)
+    master.gain.value = 1.4;
+    master.connect(ctx.destination)
+    mix.gain.value = 0.99;
+    mix.connect(master)
     verbmix.gain.value = 0.5
-    verbmix.connect(ctx.destination)
+    verbmix.connect(master)
 
     reverb.connect(verbmix)
     reverb.buffer=algoReverb(3,2);
@@ -209,18 +215,29 @@
     sounds.forEach((e)=>{
       let src = ctx.createMediaElementSource(e);
       src.connect(mix)
-      src.connect(verbmix)
+      src.connect(reverb)
       soundNodes.push(src);
     })
 
     let CurY;
     let HEIGHT = window.innerHeight;
 
-    document.onmousemove = updatePage;
-
-    function updatePage(e) {
-      CurY = (window.Event) ? e.pageY : event.clientY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
-      verbmix.gain.value = CurY/HEIGHT;
+      // document.onmousemove = updatePage;
+    //   verbSlider.onInput = updateSlider;
+    //
+    // function updateSlider(e) {
+    //   // CurY = (window.Event) ? e.pageY : event.clientY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
+    //   verbGain = e.value/100
+    //   console.log(e.value);
+    //   verbmix.gain.value = verbGain;
+    // }
+    verbmix.gain.value=0;
+    mix.gain.value=0.99;
+    let reverbSlider = document.querySelector(".slider")
+    reverbSlider.oninput = function() {
+      verbmix.gain.value = this.value/100
+      mix.gain.value = 1-(this.value/140)
+      scene.style = "border: " + mapRange(this.value, 1, 100, 100, 1) + "px solid #CCC";
     }
 
 
