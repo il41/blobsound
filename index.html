@@ -17,7 +17,7 @@
       .scene {
 /* ~~~~~~~~~LOVELY TEXTURE GLITCH ~~~~~~~~~~~~~~~~~~~~*/
         filter: blur(30px) contrast(500);
-/* ~~~~~~~~~INTENDED TO WORK ON FIREFOX VERSION 38~~~*/
+/* ~~~~~~~~~INTENDED TO WORK ON FIREFOX VERSION 87~~~*/
         z-index: -10;
         width: 400px;
         height: 400px;
@@ -121,15 +121,6 @@
       </p>
     </div>
     <br>
-    <div class="computoser">
-<!--       <audio src="0.mp3" class="audio0" loop="loop" controls></audio>
-      <audio src="1.mp3" class="audio1" loop="loop" controls></audio>
-      <audio src="2.mp3" class="audio2" loop="loop" controls></audio>
-      <audio src="3.mp3" class="audio3" loop="loop" controls></audio>
-      <audio src="4.mp3" class="audio4" loop="loop" controls></audio>
-      <audio src="5.mp3" class="audio5" loop="loop" controls></audio>
- -->
-    </div>
   </body>
 
   <script>
@@ -149,12 +140,8 @@
     }
 
 
-
-
-
-    let verbSlider = document.querySelector('.slider');
     let playBtn = document.querySelector('.play-btn');
-
+//~~~~~~~~~~~~~~~WEB AUDIO API TME~~~~~~~~~~~~~~~
     const ctx = new window.AudioContext()
     const master = ctx.createGain();
     const mix = ctx.createGain()
@@ -171,13 +158,8 @@
     reverb.buffer=algoReverb(3,2);
 
 
-    /*
-    in this ConvolverNode example we're going to create our own impulse buffer from
-    scratch algorithmically. the algoReverb() example borrows code from Nick
+    /*the algoReverb() example borrows code from Nick
     Thompson's simple-reverb repo. https://github.com/web-audio-components/simple-reverb
-
-    you can try different values for seconds, decay && reverse (boolean) in the
-    console like so: rev.buffer = algoReverb( 1.5, 3, false )
     */
     function algoReverb (seconds, decay, reverse) {
       const rate = ctx.sampleRate
@@ -200,6 +182,9 @@
     let gainNodes = []
 
     for(let i=0;i<6;i++){
+      //quickfix for netnet not fetching i+'.mp3' properly.
+      //it thinks that it's supposed to get netnet.studio/0.mp3
+      //rather than from the getting the mp3 from the repo
       let soundFile = ''
       switch(i) {
         case 0:
@@ -221,7 +206,7 @@
           soundFile = '5.mp3'
           break;
         default:
-          soundFile = '0.mp3'
+          // soundFile = '0.mp3'
       }
 
       let src = ctx.createBufferSource();
@@ -242,18 +227,23 @@
           src.buffer = buffer // load audio buffer into audio source
         })
       }
+      
+      //quickfix for the raw.githubusercontent url of 0.mp3 string loading doubled
+      if(i===0){
+        soundFile="https://raw.githubusercontent.com/il41/blobsound/main/0.mp3"
+      }
       fetch(soundFile)
         .then(res => res.arrayBuffer())
         .then(data => decodeAudioData(data))
 
     }
 
-
+//~~~~~~~~start quiet~~~~~~~~~
     gainNodes.forEach((e)=>{
       e.gain.value=0;
     })
+//~~~~~~~~~~~~~~THE PLAY BUTTON~~~~~~~~~~~~~~
     playBtn.addEventListener('click',()=>{
-      // console.log('hi')
       if (sounds[0] !== undefined){
         playBtn.style.display = 'none'
         sounds.forEach((e)=>{
@@ -265,6 +255,7 @@
       }
     })
 
+//~~~~~~~~~~~~~~MIXING REVERB DRY/WET~~~~~~~~~~~~~~
     verbmix.gain.value=0;
     mix.gain.value=0.99;
     let reverbSlider = document.querySelector(".slider")
@@ -300,7 +291,7 @@
     }
 
 
-
+//~~~~~~~~~~~~~~~~~HIDDEN CUBE~~~~~~~~~~~~~~~~~
     let cube = document.querySelector('.cube');
     let radioGroup = document.querySelector('.radio-group');
     let currentClass = '';
